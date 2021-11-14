@@ -117,9 +117,115 @@ void ls(Dir *parent)
 	}
 }
 
-void rm(Dir *parent, char *name) {}
+void rm(Dir *parent, char *name)
+{
+	if (parent->head_children_files == NULL)
+	{
+		printf("Could not find the file\n");
+		return;
+	}
+	int flag = 1;
+	if (strcmp(parent->head_children_files->name, name) == 0)
+	{
+		flag = 0;
+		if (parent->head_children_files->next == NULL)
+		{
+			parent->head_children_files = NULL;
+			return;
+		}
+		else
+		{
+			/* da free la elementul sters */
+			parent->head_children_files = parent->head_children_files->next;
+			return;
+		}
+	}
+	File *aux = parent->head_children_files;
+	if (aux->next == NULL)
+	{
+		printf("Could not find the file\n");
+		return;
+	}
+	else
+	{
+		while (aux->next->next != NULL)
+		{
+			if (strcmp(aux->next->name, name) == 0)
+			{
+				flag = 0;
+				aux->next = aux->next->next;
+				return;
+			}
+			aux = aux->next;
+		}
+		if (strcmp(aux->next->name, name) == 0)
+		{
+			flag = 0;
+			aux->next = NULL;
+			return;
+		}
+	}
+	if (flag == 1)
+	{
+		printf("Could not find the file\n");
+		return;
+	}
+}
 
-void rmdir(Dir *parent, char *name) {}
+void rmdir(Dir *parent, char *name)
+{
+	if (parent->head_children_dirs == NULL)
+	{
+		printf("Could not find the dir\n");
+		return;
+	}
+	int flag = 1;
+	if (strcmp(parent->head_children_dirs->name, name) == 0)
+	{
+		flag = 0;
+		if (parent->head_children_dirs->next == NULL)
+		{
+			parent->head_children_dirs = NULL;
+			return;
+		}
+		else
+		{
+			/* da free la elementul sters */
+			parent->head_children_dirs = parent->head_children_dirs->next;
+			return;
+		}
+	}
+	Dir *aux = parent->head_children_dirs;
+	if (aux->next == NULL)
+	{
+		printf("Could not find the dir\n");
+		return;
+	}
+	else
+	{
+		while (aux->next->next != NULL)
+		{
+			if (strcmp(aux->next->name, name) == 0)
+			{
+				flag = 0;
+				aux->next = aux->next->next;
+				return;
+			}
+			aux = aux->next;
+		}
+		if (strcmp(aux->next->name, name) == 0)
+		{
+			flag = 0;
+			aux->next = NULL;
+			return;
+		}
+	}
+	if (flag == 1)
+	{
+		printf("Could not find the dir\n");
+		return;
+	}
+}
 
 void cd(Dir **target, char *name) {}
 
@@ -139,6 +245,7 @@ int main()
 	char *comanda, *nume;
 	do
 	{
+		/* aloca eficient memoria */
 		comanda = malloc(10 * sizeof(char));
 		nume = malloc(10 * sizeof(char));
 		// fscanf(pFile, "%s", comanda);
@@ -159,6 +266,23 @@ int main()
 		{
 			ls(home);
 		}
+		if (strcmp(comanda, "rm") == 0)
+		{
+			// fscanf(pFile, "%s", nume);
+			scanf("%s", nume);
+			rm(home, nume);
+		}
+		if (strcmp(comanda, "rmdir") == 0)
+		{
+			// fscanf(pFile, "%s", nume);
+			scanf("%s", nume);
+			rmdir(home, nume);
+		}
+		// if (strcmp(comanda, "cd") == 0)
+		// {
+		// 	scanf("%s", nume);
+		// 	cd(home, nume);
+		// }
 	} while (strcmp(comanda, "stop") != 0);
 	return 0;
 }
