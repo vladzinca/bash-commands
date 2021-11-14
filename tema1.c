@@ -227,7 +227,58 @@ void rmdir(Dir *parent, char *name)
 	}
 }
 
-void cd(Dir **target, char *name) {}
+void cd(Dir **target, char *name)
+{
+	if (strcmp(name, "..")==0) {
+		if ((*target)->parent!=NULL)
+			(*target)=(*target)->parent;
+		else
+			return ;
+		return ;
+	}
+	if ((*target)->head_children_dirs == NULL)
+	{
+		printf("No directories found!\n");
+		return;
+	}
+	int flag = 1;
+	if (strcmp((*target)->head_children_dirs->name, name) == 0)
+	{
+		flag = 0;
+		(*target) = (*target)->head_children_dirs;
+		return;
+	}
+	Dir *aux = (*target)->head_children_dirs;
+	if (aux->next == NULL)
+	{
+		printf("No directories found!\n");
+		return;
+	}
+	else
+	{
+		while (aux->next != NULL)
+		{
+			if (strcmp(aux->name, name) == 0)
+			{
+				flag = 0;
+				(*target) = aux;
+				return;
+			}
+			aux = aux->next;
+		}
+		if (strcmp(aux->name, name) == 0)
+		{
+			flag = 0;
+			(*target) = aux;
+			return;
+		}
+	}
+	if (flag == 1)
+	{
+		printf("No directories found!\n");
+		return;
+	}
+}
 
 char *pwd(Dir *target) {}
 
@@ -278,11 +329,12 @@ int main()
 			scanf("%s", nume);
 			rmdir(home, nume);
 		}
-		// if (strcmp(comanda, "cd") == 0)
-		// {
-		// 	scanf("%s", nume);
-		// 	cd(home, nume);
-		// }
+		if (strcmp(comanda, "cd") == 0)
+		{
+			// fscanf(pFile, "%s", nume);
+			scanf("%s", nume);
+			cd(&home, nume);
+		}
 	} while (strcmp(comanda, "stop") != 0);
 	return 0;
 }
