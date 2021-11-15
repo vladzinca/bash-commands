@@ -281,7 +281,22 @@ void cd(Dir **target, char *name)
 	}
 }
 
-char *pwd(Dir *target) {}
+char *pwd(Dir *target)
+{
+	if (target->parent == NULL)
+	{
+		return "/home";
+	}
+	else
+	{
+		char* aux=malloc(1000*sizeof(char));
+		strcpy(aux, pwd(target->parent));
+		strcat(strcat(aux, "/"), target->name);
+		return aux;
+		// return strcat(aux, target->name);
+		// aux = strcat(pwd(target->parent), target->name);
+	}
+}
 
 void stop(Dir *target) {}
 
@@ -319,7 +334,13 @@ void tree(Dir *target, int level)
 	}
 }
 
-void mv(Dir *parent, char *oldname, char *newname) {}
+void mv(Dir *parent, char *oldname, char *newname) {
+	if (parent->head_children_dirs!=NULL)
+	{
+		printf("File\n");
+		return;
+	}
+}
 
 int main()
 {
@@ -371,6 +392,10 @@ int main()
 		if (strcmp(comanda, "tree") == 0)
 		{
 			tree(home, 0);
+		}
+		if (strcmp(comanda, "pwd") == 0)
+		{
+			printf("%s", pwd(home));
 		}
 	} while (strcmp(comanda, "stop") != 0);
 	return 0;
