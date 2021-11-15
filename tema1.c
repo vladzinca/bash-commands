@@ -229,12 +229,13 @@ void rmdir(Dir *parent, char *name)
 
 void cd(Dir **target, char *name)
 {
-	if (strcmp(name, "..")==0) {
-		if ((*target)->parent!=NULL)
-			(*target)=(*target)->parent;
+	if (strcmp(name, "..") == 0)
+	{
+		if ((*target)->parent != NULL)
+			(*target) = (*target)->parent;
 		else
-			return ;
-		return ;
+			return;
+		return;
 	}
 	if ((*target)->head_children_dirs == NULL)
 	{
@@ -284,7 +285,39 @@ char *pwd(Dir *target) {}
 
 void stop(Dir *target) {}
 
-void tree(Dir *target, int level) {}
+void tree(Dir *target, int level)
+{
+	if (target->head_children_dirs != NULL)
+	{
+		Dir *aux1 = target->head_children_dirs;
+		while (aux1->next != NULL)
+		{
+			for (int i = 0; i < level; i++)
+				printf("    ");
+			printf("%s\n", aux1->name);
+			tree(aux1, level + 1);
+			aux1 = aux1->next;
+		}
+		for (int i = 0; i < level; i++)
+			printf("    ");
+		printf("%s\n", aux1->name);
+		tree(aux1, level + 1);
+	}
+	if (target->head_children_files != NULL)
+	{
+		File *aux = target->head_children_files;
+		while (aux->next != NULL)
+		{
+			for (int i = 0; i < level; i++)
+				printf("    ");
+			printf("%s\n", aux->name);
+			aux = aux->next;
+		}
+		for (int i = 0; i < level; i++)
+			printf("    ");
+		printf("%s\n", aux->name);
+	}
+}
 
 void mv(Dir *parent, char *oldname, char *newname) {}
 
@@ -334,6 +367,10 @@ int main()
 			// fscanf(pFile, "%s", nume);
 			scanf("%s", nume);
 			cd(&home, nume);
+		}
+		if (strcmp(comanda, "tree") == 0)
+		{
+			tree(home, 0);
 		}
 	} while (strcmp(comanda, "stop") != 0);
 	return 0;
