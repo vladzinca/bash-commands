@@ -289,7 +289,7 @@ char *pwd(Dir *target)
 	}
 	else
 	{
-		char* aux=malloc(1000*sizeof(char));
+		char *aux = malloc(1000 * sizeof(char));
 		strcpy(aux, pwd(target->parent));
 		strcat(strcat(aux, "/"), target->name);
 		return aux;
@@ -334,37 +334,74 @@ void tree(Dir *target, int level)
 	}
 }
 
-void mv(Dir *parent, char *oldname, char *newname) {
-	if (parent->head_children_dirs!=NULL)
+void mv(Dir *parent, char *oldname, char *newname)
+{
+	/* daca avem fisier si director cu acelasi nume, se schimba doar directorul */
+	int direplin = 1, fileeplin = 1;
+	if (parent->head_children_dirs == NULL)
 	{
-		printf("File\n");
+		direplin = 0;
+	}
+	if (parent->head_children_files == NULL)
+	{
+		fileeplin = 0;
+	}
+	if (direplin == 0 && fileeplin == 0)
+	{
+		printf("File/Director not found\n");
 		return;
+	}
+	if (direplin == 1)
+	{
+		/* cauta oldname in dir */
+		int oldnameindir = 0;
+		Dir *aux = parent->head_children_dirs;
+		while (aux->next != NULL)
+		{
+			if (strcmp(aux->name, oldname) == 0)
+			{
+				oldnameindir = 1;
+			}
+			aux = aux->next;
+		}
+		if (oldnameindir == 1)
+		{
+			/*cauta newname in dir*/
+		}
+		else
+		{
+			/* daca oldname nu s-a gasit in dir, iar file e gol */
+			if (fileeplin==0)
+				printf("File/Director not found\n");
+		}
 	}
 }
 
 int main()
 {
-	// FILE *pFile;
-	// pFile = fopen("exemplu.in", "r");
+	FILE *pFile;
+	pFile = fopen("exemplu.in", "r");
 	Dir *home = malloc(sizeof(Dir));
-	char *comanda, *nume;
+	char *comanda, *nume, *numevechi, *numenou;
 	do
 	{
 		/* aloca eficient memoria */
 		comanda = malloc(10 * sizeof(char));
 		nume = malloc(10 * sizeof(char));
-		// fscanf(pFile, "%s", comanda);
-		scanf("%s", comanda);
+		numevechi = malloc(10 * sizeof(char));
+		numenou = malloc(10 * sizeof(char));
+		fscanf(pFile, "%s", comanda);
+		// scanf("%s", comanda);
 		if (strcmp(comanda, "touch") == 0)
 		{
-			// fscanf(pFile, "%s", nume);
-			scanf("%s", nume);
+			fscanf(pFile, "%s", nume);
+			// scanf("%s", nume);
 			touch(home, nume);
 		}
 		if (strcmp(comanda, "mkdir") == 0)
 		{
-			// fscanf(pFile, "%s", nume);
-			scanf("%s", nume);
+			fscanf(pFile, "%s", nume);
+			// scanf("%s", nume);
 			mkdir(home, nume);
 		}
 		if (strcmp(comanda, "ls") == 0)
@@ -373,20 +410,20 @@ int main()
 		}
 		if (strcmp(comanda, "rm") == 0)
 		{
-			// fscanf(pFile, "%s", nume);
-			scanf("%s", nume);
+			fscanf(pFile, "%s", nume);
+			// scanf("%s", nume);
 			rm(home, nume);
 		}
 		if (strcmp(comanda, "rmdir") == 0)
 		{
-			// fscanf(pFile, "%s", nume);
-			scanf("%s", nume);
+			fscanf(pFile, "%s", nume);
+			// scanf("%s", nume);
 			rmdir(home, nume);
 		}
 		if (strcmp(comanda, "cd") == 0)
 		{
-			// fscanf(pFile, "%s", nume);
-			scanf("%s", nume);
+			fscanf(pFile, "%s", nume);
+			// scanf("%s", nume);
 			cd(&home, nume);
 		}
 		if (strcmp(comanda, "tree") == 0)
@@ -396,6 +433,14 @@ int main()
 		if (strcmp(comanda, "pwd") == 0)
 		{
 			printf("%s", pwd(home));
+		}
+		if (strcmp(comanda, "mv") == 0)
+		{
+			fscanf(pFile, "%s", numevechi);
+			fscanf(pFile, "%s", numenou);
+			// scanf("%s", numevechi);
+			// scanf("%s", numenou);
+			mv(home, numevechi, numenou);
 		}
 	} while (strcmp(comanda, "stop") != 0);
 	return 0;
