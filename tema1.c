@@ -430,8 +430,35 @@ void mv(Dir *parent, char *oldname, char *newname)
 		if (oldnameinfile = 1)
 		{
 			/* daca exista oldname in file, cauta newname in file */
+			int newnameinfile = 0;
+			File *aux3 = parent->head_children_files;
+			while (aux3->next != NULL)
+			{
+				if (strcmp(aux3->name, newname) == 0)
+				{
+					newnameinfile = 1;
+					break;
+				}
+				aux3 = aux3->next;
+			}
+			if (strcmp(aux3->name, newname) == 0)
+				newnameinfile = 1;
+			if (newnameinfile == 0)
+			/* daca newname nu exista deja in file, se poate folosi mv */
+			{
+				rm(parent, oldname);
+				touch(parent, newname);
+				return;
+			}
+			else
+			{
+				/* daca newname exista deja in file, iar lista de directoare s-a verificat deja */
+				printf("File/Director already exists\n");
+				return;
+			}
 		}
-		else {
+		else
+		{
 			/* daca nu exista oldname in file */
 			printf("File/Director not found\n");
 			return;
