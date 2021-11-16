@@ -25,6 +25,7 @@ typedef struct File
 
 void touch(Dir *parent, char *name)
 {
+	/* implementeaza verificare daca exista director cu numele name, la fel si la mkdir pt file */
 	if (parent->head_children_files == NULL)
 	{
 		File *file = malloc(sizeof(File));
@@ -354,7 +355,7 @@ void mv(Dir *parent, char *oldname, char *newname)
 	}
 	if (direplin == 1)
 	{
-		/* cauta oldname in dir */
+		/* cauta oldname in dir si file s*/
 		int oldnameindir = 0;
 		Dir *aux = parent->head_children_dirs;
 		while (aux->next != NULL)
@@ -384,8 +385,24 @@ void mv(Dir *parent, char *oldname, char *newname)
 			}
 			if (strcmp(aux1->name, newname) == 0)
 				newnameindir = 1;
+			if (newnameindir == 0 && parent->head_children_files != NULL)
+			{
+				/*cauta si in file */
+				File *aux4 = parent->head_children_files;
+				while (aux4->next != NULL)
+				{
+					if (strcmp(aux4->name, newname) == 0)
+					{
+						newnameindir = 1;
+						break;
+					}
+					aux4 = aux4->next;
+				}
+				if (strcmp(aux4->name, newname) == 0)
+					newnameindir = 1;
+			}
 			if (newnameindir == 0)
-			/* daca newname nu exista deja in dir, se poate face schimbarea cu mv */
+			/* daca newname nu exista deja in dir/file, se poate face schimbarea cu mv */
 			{
 				rmdir(parent, oldname);
 				mkdir(parent, newname);
@@ -443,8 +460,24 @@ void mv(Dir *parent, char *oldname, char *newname)
 			}
 			if (strcmp(aux3->name, newname) == 0)
 				newnameinfile = 1;
+			if (newnameinfile == 0 && parent->head_children_dirs != NULL)
+			{
+				/*cauta si in dir */
+				Dir *aux5 = parent->head_children_dirs;
+				while (aux5->next != NULL)
+				{
+					if (strcmp(aux5->name, newname) == 0)
+					{
+						newnameinfile = 1;
+						break;
+					}
+					aux5 = aux5->next;
+				}
+				if (strcmp(aux5->name, newname) == 0)
+					newnameinfile = 1;
+			}
 			if (newnameinfile == 0)
-			/* daca newname nu exista deja in file, se poate folosi mv */
+			/* daca newname nu exista deja in file/dir, se poate folosi mv */
 			{
 				rm(parent, oldname);
 				touch(parent, newname);
@@ -452,7 +485,7 @@ void mv(Dir *parent, char *oldname, char *newname)
 			}
 			else
 			{
-				/* daca newname exista deja in file, iar lista de directoare s-a verificat deja */
+				/* daca newname exista deja in file/dir, iar lista de directoare s-a verificat deja */
 				printf("File/Director already exists\n");
 				return;
 			}
@@ -468,8 +501,8 @@ void mv(Dir *parent, char *oldname, char *newname)
 
 int main()
 {
-	FILE *pFile;
-	pFile = fopen("exemplu.in", "r");
+	// FILE *pFile;
+	// pFile = fopen("exemplu.in", "r");
 	Dir *home = malloc(sizeof(Dir));
 	char *comanda, *nume, *numevechi, *numenou;
 	do
@@ -479,18 +512,18 @@ int main()
 		nume = malloc(10 * sizeof(char));
 		numevechi = malloc(10 * sizeof(char));
 		numenou = malloc(10 * sizeof(char));
-		fscanf(pFile, "%s", comanda);
-		// scanf("%s", comanda);
+		// fscanf(pFile, "%s", comanda);
+		scanf("%s", comanda);
 		if (strcmp(comanda, "touch") == 0)
 		{
-			fscanf(pFile, "%s", nume);
-			// scanf("%s", nume);
+			// fscanf(pFile, "%s", nume);
+			scanf("%s", nume);
 			touch(home, nume);
 		}
 		if (strcmp(comanda, "mkdir") == 0)
 		{
-			fscanf(pFile, "%s", nume);
-			// scanf("%s", nume);
+			// fscanf(pFile, "%s", nume);
+			scanf("%s", nume);
 			mkdir(home, nume);
 		}
 		if (strcmp(comanda, "ls") == 0)
@@ -499,20 +532,20 @@ int main()
 		}
 		if (strcmp(comanda, "rm") == 0)
 		{
-			fscanf(pFile, "%s", nume);
-			// scanf("%s", nume);
+			// fscanf(pFile, "%s", nume);
+			scanf("%s", nume);
 			rm(home, nume);
 		}
 		if (strcmp(comanda, "rmdir") == 0)
 		{
-			fscanf(pFile, "%s", nume);
-			// scanf("%s", nume);
+			// fscanf(pFile, "%s", nume);
+			scanf("%s", nume);
 			rmdir(home, nume);
 		}
 		if (strcmp(comanda, "cd") == 0)
 		{
-			fscanf(pFile, "%s", nume);
-			// scanf("%s", nume);
+			// fscanf(pFile, "%s", nume);
+			scanf("%s", nume);
 			cd(&home, nume);
 		}
 		if (strcmp(comanda, "tree") == 0)
@@ -525,10 +558,10 @@ int main()
 		}
 		if (strcmp(comanda, "mv") == 0)
 		{
-			fscanf(pFile, "%s", numevechi);
-			fscanf(pFile, "%s", numenou);
-			// scanf("%s", numevechi);
-			// scanf("%s", numenou);
+			// fscanf(pFile, "%s", numevechi);
+			// fscanf(pFile, "%s", numenou);
+			scanf("%s", numevechi);
+			scanf("%s", numenou);
 			mv(home, numevechi, numenou);
 		}
 	} while (strcmp(comanda, "stop") != 0);
