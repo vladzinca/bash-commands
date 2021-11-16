@@ -348,6 +348,7 @@ void mv(Dir *parent, char *oldname, char *newname)
 	}
 	if (direplin == 0 && fileeplin == 0)
 	{
+		/* daca si dir si file sunt goale */
 		printf("File/Director not found\n");
 		return;
 	}
@@ -361,18 +362,79 @@ void mv(Dir *parent, char *oldname, char *newname)
 			if (strcmp(aux->name, oldname) == 0)
 			{
 				oldnameindir = 1;
+				break;
 			}
 			aux = aux->next;
 		}
+		if (strcmp(aux->name, oldname) == 0)
+			oldnameindir = 1;
 		if (oldnameindir == 1)
 		{
-			/*cauta newname in dir*/
+			/* daca oldname s-a gasit in dir, cauta newname */
+			int newnameindir = 0;
+			Dir *aux1 = parent->head_children_dirs;
+			while (aux1->next != NULL)
+			{
+				if (strcmp(aux1->name, newname) == 0)
+				{
+					newnameindir = 1;
+					break;
+				}
+				aux1 = aux1->next;
+			}
+			if (strcmp(aux1->name, newname) == 0)
+				newnameindir = 1;
+			if (newnameindir == 0)
+			/* daca newname nu exista deja in dir, se poate face schimbarea cu mv */
+			{
+				rmdir(parent, oldname);
+				mkdir(parent, newname);
+				return;
+			}
+			else
+			{
+				/* daca oldname s-a gasit in dir, dar newname exista deja, iar file e gol */
+				if (fileeplin == 0)
+				{
+					printf("File/Director already exists\n");
+					return;
+				}
+			}
 		}
 		else
 		{
 			/* daca oldname nu s-a gasit in dir, iar file e gol */
-			if (fileeplin==0)
+			if (fileeplin == 0)
+			{
 				printf("File/Director not found\n");
+				return;
+			}
+		}
+	}
+	if (fileeplin == 1)
+	{
+		/* cauta oldname in file */
+		int oldnameinfile = 0;
+		File *aux2 = parent->head_children_files;
+		while (aux2->next != NULL)
+		{
+			if (strcmp(aux2->name, oldname) == 0)
+			{
+				oldnameinfile = 1;
+				break;
+			}
+			aux2 = aux2->next;
+		}
+		if (strcmp(aux2->name, oldname) == 0)
+			oldnameinfile = 1;
+		if (oldnameinfile = 1)
+		{
+			/* daca exista oldname in file, cauta newname in file */
+		}
+		else {
+			/* daca nu exista oldname in file */
+			printf("File/Director not found\n");
+			return;
 		}
 	}
 }
