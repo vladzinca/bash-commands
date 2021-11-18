@@ -501,69 +501,82 @@ void mv(Dir *parent, char *oldname, char *newname)
 
 int main()
 {
-	// FILE *pFile;
-	// pFile = fopen("exemplu.in", "r");
+	FILE *pFile;
+	pFile = fopen("exemplu.in", "r");
 	Dir *home = malloc(sizeof(Dir));
-	char *comanda, *nume, *numevechi, *numenou;
+	home->name = "home";
+	// char *comanda, *nume, *numevechi, *numenou;
+	char *line = malloc(MAX_INPUT_LINE_SIZE * sizeof(char));
+	fgets(line, MAX_INPUT_LINE_SIZE, pFile);
 	do
 	{
 		/* aloca eficient memoria */
-		comanda = malloc(10 * sizeof(char));
-		nume = malloc(10 * sizeof(char));
-		numevechi = malloc(10 * sizeof(char));
-		numenou = malloc(10 * sizeof(char));
+		char *token = strtok(line, " \n");
+		while (token != NULL)
+		{
+			printf(">>%s<<\n", token);
+			token = strtok(NULL, " \n");
+		}
+		// printf("%s", line);
+		// comanda = malloc(10 * sizeof(char));
+		// nume = malloc(10 * sizeof(char));
+		// numevechi = malloc(10 * sizeof(char));
+		// numenou = malloc(10 * sizeof(char));
 		// fscanf(pFile, "%s", comanda);
-		scanf("%s", comanda);
-		if (strcmp(comanda, "touch") == 0)
-		{
-			// fscanf(pFile, "%s", nume);
-			scanf("%s", nume);
-			touch(home, nume);
-		}
-		if (strcmp(comanda, "mkdir") == 0)
-		{
-			// fscanf(pFile, "%s", nume);
-			scanf("%s", nume);
-			mkdir(home, nume);
-		}
-		if (strcmp(comanda, "ls") == 0)
-		{
-			ls(home);
-		}
-		if (strcmp(comanda, "rm") == 0)
-		{
-			// fscanf(pFile, "%s", nume);
-			scanf("%s", nume);
-			rm(home, nume);
-		}
-		if (strcmp(comanda, "rmdir") == 0)
-		{
-			// fscanf(pFile, "%s", nume);
-			scanf("%s", nume);
-			rmdir(home, nume);
-		}
-		if (strcmp(comanda, "cd") == 0)
-		{
-			// fscanf(pFile, "%s", nume);
-			scanf("%s", nume);
-			cd(&home, nume);
-		}
-		if (strcmp(comanda, "tree") == 0)
-		{
-			tree(home, 0);
-		}
-		if (strcmp(comanda, "pwd") == 0)
-		{
-			printf("%s", pwd(home));
-		}
-		if (strcmp(comanda, "mv") == 0)
-		{
-			// fscanf(pFile, "%s", numevechi);
-			// fscanf(pFile, "%s", numenou);
-			scanf("%s", numevechi);
-			scanf("%s", numenou);
-			mv(home, numevechi, numenou);
-		}
-	} while (strcmp(comanda, "stop") != 0);
+		// // scanf("%s", comanda);
+		// if (strcmp(comanda, "touch") == 0)
+		// {
+		// 	fscanf(pFile, "%s", nume);
+		// 	// scanf("%s", nume);
+		// 	touch(home, nume);
+		// }
+		// if (strcmp(comanda, "mkdir") == 0)
+		// {
+		// 	fscanf(pFile, "%s", nume);
+		// 	// scanf("%s", nume);
+		// 	mkdir(home, nume);
+		// }
+		// if (strcmp(comanda, "ls") == 0)
+		// {
+		// 	ls(home);
+		// }
+		// if (strcmp(comanda, "rm") == 0)
+		// {
+		// 	fscanf(pFile, "%s", nume);
+		// 	// scanf("%s", nume);
+		// 	rm(home, nume);
+		// }
+		// if (strcmp(comanda, "rmdir") == 0)
+		// {
+		// 	fscanf(pFile, "%s", nume);
+		// 	// scanf("%s", nume);
+		// 	rmdir(home, nume);
+		// }
+		// if (strcmp(comanda, "cd") == 0)
+		// {
+		// 	fscanf(pFile, "%s", nume);
+		// 	// scanf("%s", nume);
+		// 	cd(&home, nume);
+		// }
+		// if (strcmp(comanda, "tree") == 0)
+		// {
+		// 	tree(home, 0);
+		// }
+		// if (strcmp(comanda, "pwd") == 0)
+		// {
+		// 	printf("%s", pwd(home));
+		// }
+		// if (strcmp(comanda, "mv") == 0)
+		// {
+		// 	fscanf(pFile, "%s", numevechi);
+		// 	fscanf(pFile, "%s", numenou);
+		// 	// scanf("%s", numevechi);
+		// 	// scanf("%s", numenou);
+		// 	mv(home, numevechi, numenou);
+		// }
+	} while (fgets(line, MAX_INPUT_LINE_SIZE, pFile) != NULL);
+	free(line);
+	free(home);
+	fclose(pFile);
 	return 0;
 }
