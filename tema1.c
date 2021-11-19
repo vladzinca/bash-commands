@@ -213,25 +213,25 @@ void rmdir(Dir *parent, char *name)
 		{
 			/* elibereaza memoria directoarelor/fisierelor din directorul sters, trebuie implementat si mai jos */
 			Dir *aux = parent->head_children_dirs;
-			if (aux->head_children_dirs != NULL || aux->head_children_files!=NULL)
+			if (aux->head_children_dirs != NULL || aux->head_children_files != NULL)
 			{
 				if (aux->head_children_dirs != NULL)
 				{
-					Dir* aux2=aux->head_children_dirs;
-					while (aux2->next!=NULL)
+					Dir *aux2 = aux->head_children_dirs;
+					while (aux2->next != NULL)
 					{
 						rmdir(aux, aux2->name);
-						aux2=aux2->next;
+						aux2 = aux2->next;
 					}
 					rmdir(aux, aux2->name);
 				}
 				if (aux->head_children_files != NULL)
 				{
-					File* aux2 = aux->head_children_files;
-					while (aux2->next!=NULL)
+					File *aux2 = aux->head_children_files;
+					while (aux2->next != NULL)
 					{
 						rm(aux, aux2->name);
-						aux2=aux2->next;
+						aux2 = aux2->next;
 					}
 					rm(aux, aux2->name);
 				}
@@ -244,7 +244,31 @@ void rmdir(Dir *parent, char *name)
 		else
 		{
 			/* da free la elementul sters */
+			/* elibereaza si memoria directoarelor/fisierelor din directorul sters, trebuie implementat si mai jos */
 			Dir *aux = parent->head_children_dirs;
+			if (aux->head_children_dirs != NULL || aux->head_children_files != NULL)
+			{
+				if (aux->head_children_dirs != NULL)
+				{
+					Dir *aux2 = aux->head_children_dirs;
+					while (aux2->next != NULL)
+					{
+						rmdir(aux, aux2->name);
+						aux2 = aux2->next;
+					}
+					rmdir(aux, aux2->name);
+				}
+				if (aux->head_children_files != NULL)
+				{
+					File *aux2 = aux->head_children_files;
+					while (aux2->next != NULL)
+					{
+						rm(aux, aux2->name);
+						aux2 = aux2->next;
+					}
+					rm(aux, aux2->name);
+				}
+			}
 			parent->head_children_dirs = parent->head_children_dirs->next;
 			free(aux->name);
 			free(aux);
@@ -493,6 +517,7 @@ void mv(Dir *parent, char *oldname, char *newname)
 	{
 		/* daca si dir si file sunt goale */
 		printf("File/Director not found\n");
+		free(newname);
 		return;
 	}
 	if (direplin == 1)
@@ -556,6 +581,7 @@ void mv(Dir *parent, char *oldname, char *newname)
 				if (fileeplin == 0)
 				{
 					printf("File/Director already exists\n");
+					free(newname);
 					return;
 				}
 			}
@@ -566,6 +592,7 @@ void mv(Dir *parent, char *oldname, char *newname)
 			if (fileeplin == 0)
 			{
 				printf("File/Director not found\n");
+				free(newname);
 				return;
 			}
 		}
@@ -629,6 +656,7 @@ void mv(Dir *parent, char *oldname, char *newname)
 			{
 				/* daca newname exista deja in file/dir, iar lista de directoare s-a verificat deja */
 				printf("File/Director already exists\n");
+				free(newname);
 				return;
 			}
 		}
@@ -636,6 +664,7 @@ void mv(Dir *parent, char *oldname, char *newname)
 		{
 			/* daca nu exista oldname in file */
 			printf("File/Director not found\n");
+			free(newname);
 			return;
 		}
 	}
@@ -750,6 +779,7 @@ int main()
 				numenou = malloc((1 + strlen(token)) * sizeof(char));
 				strcpy(numenou, token);
 				mv(home, numevechi, numenou);
+				free(numevechi); // s-ar putea sa trebuiasca stearsa sau mutat in mv exact ca free(newname);
 				free(comanda);
 			}
 			else
