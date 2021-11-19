@@ -68,8 +68,8 @@ void mkdir(Dir *parent, char *name)
 		Dir *dir = malloc(sizeof(Dir));
 		dir->name = name;
 		dir->parent = parent;
-		dir->head_children_dirs= NULL;
-		dir->head_children_files=NULL;
+		dir->head_children_dirs = NULL;
+		dir->head_children_files = NULL;
 		dir->next = NULL;
 		parent->head_children_dirs = dir;
 	}
@@ -78,8 +78,8 @@ void mkdir(Dir *parent, char *name)
 		Dir *dir = malloc(sizeof(Dir));
 		dir->name = name;
 		dir->parent = parent;
-				dir->head_children_dirs= NULL;
-		dir->head_children_files=NULL;
+		dir->head_children_dirs = NULL;
+		dir->head_children_files = NULL;
 		dir->next = NULL;
 		Dir *aux = parent->head_children_dirs;
 		while (aux->next != NULL)
@@ -135,7 +135,7 @@ void rm(Dir *parent, char *name)
 	if (strcmp(parent->head_children_files->name, name) == 0)
 	{
 		flag = 0;
-		File* aux = parent->head_children_files;
+		File *aux = parent->head_children_files;
 		if (parent->head_children_files->next == NULL)
 		{
 			parent->head_children_files = NULL;
@@ -165,7 +165,7 @@ void rm(Dir *parent, char *name)
 			if (strcmp(aux->next->name, name) == 0)
 			{
 				flag = 0;
-				File* aux2 = aux->next;
+				File *aux2 = aux->next;
 				aux->next = aux->next->next;
 				free(aux2->name);
 				free(aux2);
@@ -176,7 +176,7 @@ void rm(Dir *parent, char *name)
 		if (strcmp(aux->next->name, name) == 0)
 		{
 			flag = 0;
-			File* aux2 = aux->next;
+			File *aux2 = aux->next;
 			aux->next = NULL;
 			free(aux2->name);
 			free(aux2);
@@ -203,7 +203,7 @@ void rmdir(Dir *parent, char *name)
 		flag = 0;
 		if (parent->head_children_dirs->next == NULL)
 		{
-			Dir* aux = parent->head_children_dirs;
+			Dir *aux = parent->head_children_dirs;
 			parent->head_children_dirs = NULL;
 			free(aux->name);
 			free(aux);
@@ -212,7 +212,7 @@ void rmdir(Dir *parent, char *name)
 		else
 		{
 			/* da free la elementul sters */
-			Dir* aux = parent->head_children_dirs;
+			Dir *aux = parent->head_children_dirs;
 			parent->head_children_dirs = parent->head_children_dirs->next;
 			free(aux->name);
 			free(aux);
@@ -232,7 +232,7 @@ void rmdir(Dir *parent, char *name)
 			if (strcmp(aux->next->name, name) == 0)
 			{
 				flag = 0;
-				Dir* aux2 = aux->next;
+				Dir *aux2 = aux->next;
 				aux->next = aux->next->next;
 				free(aux2->name);
 				free(aux2);
@@ -243,7 +243,7 @@ void rmdir(Dir *parent, char *name)
 		if (strcmp(aux->next->name, name) == 0)
 		{
 			flag = 0;
-			Dir* aux2 = aux->next;
+			Dir *aux2 = aux->next;
 			aux->next = NULL;
 			free(aux2->name);
 			free(aux2);
@@ -313,19 +313,64 @@ void cd(Dir **target, char *name)
 
 char *pwd(Dir *target)
 {
-	if (target->parent == NULL)
+	char *sirulPwd = malloc((2 + strlen(target->name)) * sizeof(char));
+	strcpy(sirulPwd, target->name);
+	strcat(sirulPwd, "/");
+	// printf("%s", sirulPwd);
+	// printf(">>%s<<\n", target->name);
+	while (target->parent != NULL)
 	{
-		return "/home";
+		target = target->parent;
+		sirulPwd = realloc(sirulPwd, (2 + strlen(sirulPwd) + strlen(target->name)) * sizeof(char));
+		strcat(sirulPwd, target->name);
+		strcat(sirulPwd, "/");
+		// printf(">>%s<<\n", target->name);
 	}
-	else
+	char *auxPwd = malloc((1 + strlen(sirulPwd)) * sizeof(char));
+	strcpy(auxPwd, "");
+	char *token = strtok(sirulPwd, "/");
+	while (token != NULL)
 	{
-		char *aux = malloc(1000 * sizeof(char));
-		strcpy(aux, pwd(target->parent));
-		strcat(strcat(aux, "/"), target->name);
-		return aux;
-		// return strcat(aux, target->name);
-		// aux = strcat(pwd(target->parent), target->name);
+		char *aux;
+		aux = malloc((1 + strlen(auxPwd)) * sizeof(char));
+		strcpy(aux, auxPwd);
+		strcpy(auxPwd, "/");
+		strcat(auxPwd, token);
+		strcat(auxPwd, aux);
+		free(aux);
+		/*prelucreaza */
+		token = strtok(NULL, "/");
 	}
+	free(sirulPwd);
+	return auxPwd;
+	// char* aux;
+	// if (target->parent == NULL)
+	// {
+	// 	aux = malloc(6*sizeof(char));
+	// 	strcpy(aux, "/home");
+	// 	return aux;
+	// }
+	// else
+	// {
+	// 	if (aux == NULL)
+	// 	{
+	// 		aux = malloc(1+sizeof(aux)+strlen(target->name));
+	// 	}
+	// 	else
+	// 	// char * aux;
+	// 	// char * altaux = malloc(1000*sizeof(char));
+	// 	// strcpy(altaux, pwd(target->parent));
+	// 	// char * aux = malloc((10+strlen(target->name))*sizeof(char));
+	// 		aux = realloc(aux, 1000+strlen(target->name));
+	// 	// char *aux = malloc((2 + strlen(pwd(target->parent)) + strlen(target->name)) * sizeof(char));
+	// 	strcpy(aux, pwd(target->parent));
+	// 	// char *aux2;
+	// 	// strcat(strcat(aux, "/"), target->name);
+	// 	// strcpy(aux2, pwd(target->parent));
+
+	// 	// free(aux);
+	// 	return strcat(strcat(aux, "/"), target->name);
+	// }
 }
 
 void stop(Dir *target)
@@ -350,19 +395,20 @@ void stop(Dir *target)
 		while (aux->next != NULL)
 		{
 			Dir *aux2 = aux;
-			if (aux->head_children_dirs!=NULL || aux->head_children_files!=NULL)
+			if (aux->head_children_dirs != NULL || aux->head_children_files != NULL)
 				stop(aux); ////
 			aux = aux->next;
-			free(aux2->name);///
-			free(aux2);///
+			free(aux2->name); ///
+			free(aux2);		  ///
 		}
-		if (aux->head_children_dirs!=NULL || aux->head_children_files!=NULL)
+		if (aux->head_children_dirs != NULL || aux->head_children_files != NULL)
 			stop(aux);
-		free(aux->name);////
+		free(aux->name); ////
 		// free(aux->name);
 		free(aux);
 	}
-	// free(target);
+	if (strcmp(target->name, "home") == 0)
+		free(target);
 }
 
 void tree(Dir *target, int level)
@@ -571,116 +617,122 @@ int main()
 	home->name = "home";
 	home->head_children_files = NULL;
 	home->head_children_dirs = NULL;
-	home->parent= NULL;
+	home->parent = NULL;
 	char *comanda, *nume, *numevechi, *numenou;
 	char *line = malloc(MAX_INPUT_LINE_SIZE * sizeof(char));
 	fgets(line, MAX_INPUT_LINE_SIZE, pFile);
 	do
 	{
 		/* aloca eficient memoria */
-		char *token = strtok(line, "\n ");
-		// while (token != NULL)
-		// {
-		// printf(">>%s<<\n", token);
-		comanda = malloc(sizeof(token));
-		strcpy(comanda, token);
-		if (strcmp(comanda, "touch") == 0)
+		if (strcmp(line, "\n") != 0)
 		{
-			token = strtok(NULL, "\n ");
-			/// 1+
-			nume = malloc((1+strlen(token))*sizeof(char));
-			strcpy(nume, token);
-			// fscanf(pFile, "%s", nume);
-			// // scanf("%s", nume);
-			touch(home, nume);
-			free(comanda);
-		}
-		else
-			if(strcmp(comanda, "mkdir") == 0)
+			char *token = strtok(line, "\n ");
+			// while (token != NULL)
+			// {
+			// printf(">>%s<<\n", token);
+			comanda = malloc((1 + strlen(token)) * sizeof(char));
+			strcpy(comanda, token);
+			if (strcmp(comanda, "touch") == 0)
 			{
 				token = strtok(NULL, "\n ");
-				nume = malloc((1+strlen(token))*sizeof(char));
+				/// 1+
+				nume = malloc((1 + strlen(token)) * sizeof(char));
+				strcpy(nume, token);
+				// fscanf(pFile, "%s", nume);
+				// // scanf("%s", nume);
+				touch(home, nume);
+				free(comanda);
+			}
+			else if (strcmp(comanda, "mkdir") == 0)
+			{
+				token = strtok(NULL, "\n ");
+				nume = malloc((1 + strlen(token)) * sizeof(char));
 				strcpy(nume, token);
 				mkdir(home, nume);
 				free(comanda);
 			}
-			else
-		// if (strcmp(comanda, "mkdir") == 0)
-		// {
-		// 	fscanf(pFile, "%s", nume);
-		// 	// scanf("%s", nume);
-		// 	mkdir(home, nume);
-		// }
-				if (strcmp(comanda, "ls") == 0)
-				{
-					ls(home);
-					free(comanda);
-				}
-				else
-					if (strcmp(comanda, "stop") == 0)
-					{
-						stop(home);
-						free(comanda);
-					}
-					else
-						if(strcmp(comanda, "rm")==0) {
-							token = strtok(NULL, "\n ");
-							/* fa si aia cu daca Ana [3] sa fie marimea 4 */
-							nume = malloc(sizeof(token));
-							strcpy(nume, token);
-							rm(home, nume);
-							free(comanda);
-							free(nume);
-						}
-						else
-							if (strcmp(comanda, "rmdir")==0) {
-								token = strtok(NULL, "\n");
-								nume = malloc(sizeof(token));
-								strcpy(nume, token);
-								rmdir(home, nume);
-								free(comanda);
-								free(nume);
-							}
-							else
-								if (strcmp(comanda, "cd")==0) {
-									token = strtok(NULL, "\n");
-									nume = malloc(sizeof(token));
-									strcpy(nume, token);
-									cd(&home, nume);
-									free(comanda);
-									free(nume);
-								}
-								else
-									if (strcmp(comanda, "tree")==0) {
-										tree(home, 0);
-										free(comanda);
-									}
-		// }
-		// if (strcmp(comanda, "cd") == 0)
-		// {
-		// 	fscanf(pFile, "%s", nume);
-		// 	// scanf("%s", nume);
-		// 	cd(&home, nume);
-		// }
-		// if (strcmp(comanda, "tree") == 0)
-		// {
-		// 	tree(home, 0);
-		// }
-		// if (strcmp(comanda, "pwd") == 0)
-		// {
-		// 	printf("%s", pwd(home));
-		// }
-		// if (strcmp(comanda, "mv") == 0)
-		// {
-		// 	fscanf(pFile, "%s", numevechi);
-		// 	fscanf(pFile, "%s", numenou);
-		// 	// scanf("%s", numevechi);
-		// 	// scanf("%s", numenou);
-		// 	mv(home, numevechi, numenou);
-		// }
+			else if (strcmp(comanda, "ls") == 0)
+			{
+				ls(home);
+				free(comanda);
+			}
+			else if (strcmp(comanda, "stop") == 0)
+			{
+				Dir *aux = home;
+				while (strcmp(aux->name, "home") != 0)
+					aux = aux->parent;
+				stop(aux);
+				free(comanda);
+			}
+			else if (strcmp(comanda, "rm") == 0)
+			{
+				token = strtok(NULL, "\n ");
+				/* fa si aia cu daca Ana [3] sa fie marimea 4 */
+				nume = malloc((1 + strlen(token)) * sizeof(char));
+				strcpy(nume, token);
+				rm(home, nume);
+				free(comanda);
+				free(nume);
+			}
+			else if (strcmp(comanda, "rmdir") == 0)
+			{
+				token = strtok(NULL, "\n");
+				nume = malloc((1 + strlen(token)) * sizeof(char));
+				strcpy(nume, token);
+				rmdir(home, nume);
+				free(comanda);
+				free(nume);
+			}
+			else if (strcmp(comanda, "cd") == 0)
+			{
+				token = strtok(NULL, "\n");
+				nume = malloc((1 + strlen(token)) * sizeof(char));
+				strcpy(nume, token);
+				cd(&home, nume);
+				free(comanda);
+				free(nume);
+			}
+			else if (strcmp(comanda, "tree") == 0)
+			{
+				tree(home, 0);
+				free(comanda);
+			}
+			else if (strcmp(comanda, "pwd") == 0)
+			{
+				// printf("%s", pwd(home));
+				// pwd(home);
+
+				// pwd(home);
+				char *workingdirectory = pwd(home);
+				printf("%s", workingdirectory);
+				// // if (strcmp(workingdirectory, home->name) != 0)
+				free(workingdirectory);
+				free(comanda);
+			}
+			else if (strcmp(comanda, "mv") == 0)
+			{
+				token = strtok(NULL, "\n ");
+				numevechi = malloc((1 + strlen(token)) * sizeof(char));
+				strcpy(numevechi, token);
+				token = strtok(NULL, "\n ");
+				numenou = malloc((1 + strlen(token)) * sizeof(char));
+				strcpy(numenou, token);
+				mv(home, numevechi, numenou);
+				free(comanda);
+			}
+			// if (strcmp(comanda, "mv") == 0)
+			// {
+			// 	fscanf(pFile, "%s", numevechi);
+			// 	fscanf(pFile, "%s", numenou);
+			// 	// scanf("%s", numevechi);
+			// 	// scanf("%s", numenou);
+			// 	mv(home, numevechi, numenou);
+		}
 	} while (fgets(line, MAX_INPUT_LINE_SIZE, pFile) != NULL);
-	free(home);
+	// while ()
+	// free(home);
 	free(line);
 	fclose(pFile);
 	return 0;
+	/* adauga exceptii */
 }
