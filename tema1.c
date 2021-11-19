@@ -48,6 +48,8 @@ void touch(Dir *parent, char *name)
 			if (strcmp(aux->name, name) == 0)
 			{
 				printf("%s", "File already exists\n");
+				free(file);
+				free(name);
 				return;
 			}
 			aux = aux->next;
@@ -55,6 +57,8 @@ void touch(Dir *parent, char *name)
 		if (strcmp(aux->name, name) == 0)
 		{
 			printf("%s", "File already exists\n");
+			free(file);
+			free(name);
 			return;
 		}
 		aux->next = file;
@@ -87,6 +91,8 @@ void mkdir(Dir *parent, char *name)
 			if (strcmp(aux->name, name) == 0)
 			{
 				printf("%s", "Directory already exists\n");
+				free(dir);
+				free(name);
 				return;
 			}
 			aux = aux->next;
@@ -94,6 +100,8 @@ void mkdir(Dir *parent, char *name)
 		if (strcmp(aux->name, name) == 0)
 		{
 			printf("%s", "Directory already exists\n");
+			free(dir);
+			free(name);
 			return;
 		}
 		aux->next = dir;
@@ -203,7 +211,31 @@ void rmdir(Dir *parent, char *name)
 		flag = 0;
 		if (parent->head_children_dirs->next == NULL)
 		{
+			/* elibereaza memoria directoarelor/fisierelor din directorul sters, trebuie implementat si mai jos */
 			Dir *aux = parent->head_children_dirs;
+			if (aux->head_children_dirs != NULL || aux->head_children_files!=NULL)
+			{
+				if (aux->head_children_dirs != NULL)
+				{
+					Dir* aux2=aux->head_children_dirs;
+					while (aux2->next!=NULL)
+					{
+						rmdir(aux, aux2->name);
+						aux2=aux2->next;
+					}
+					rmdir(aux, aux2->name);
+				}
+				if (aux->head_children_files != NULL)
+				{
+					File* aux2 = aux->head_children_files;
+					while (aux2->next!=NULL)
+					{
+						rm(aux, aux2->name);
+						aux2=aux2->next;
+					}
+					rm(aux, aux2->name);
+				}
+			}
 			parent->head_children_dirs = NULL;
 			free(aux->name);
 			free(aux);
@@ -611,8 +643,8 @@ void mv(Dir *parent, char *oldname, char *newname)
 
 int main()
 {
-	FILE *pFile;
-	pFile = fopen("exemplu.in", "r");
+	// FILE *pFile;
+	// pFile = fopen("exemplu.in", "r");
 	Dir *home = malloc(sizeof(Dir));
 	home->name = "home";
 	home->head_children_files = NULL;
@@ -620,7 +652,7 @@ int main()
 	home->parent = NULL;
 	char *comanda, *nume, *numevechi, *numenou;
 	char *line = malloc(MAX_INPUT_LINE_SIZE * sizeof(char));
-	fgets(line, MAX_INPUT_LINE_SIZE, pFile);
+	fgets(line, MAX_INPUT_LINE_SIZE, stdin);
 	do
 	{
 		/* aloca eficient memoria */
@@ -720,6 +752,11 @@ int main()
 				mv(home, numevechi, numenou);
 				free(comanda);
 			}
+			else
+			{
+				free(comanda);
+				continue;
+			}
 			// if (strcmp(comanda, "mv") == 0)
 			// {
 			// 	fscanf(pFile, "%s", numevechi);
@@ -728,11 +765,12 @@ int main()
 			// 	// scanf("%s", numenou);
 			// 	mv(home, numevechi, numenou);
 		}
-	} while (fgets(line, MAX_INPUT_LINE_SIZE, pFile) != NULL);
+	} while (fgets(line, MAX_INPUT_LINE_SIZE, stdin) != NULL);
 	// while ()
 	// free(home);
 	free(line);
-	fclose(pFile);
+	// fclose(pFile);
 	return 0;
 	/* adauga exceptii */
+	/* maybe fflush stdin? */
 }
