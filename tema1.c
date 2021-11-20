@@ -25,43 +25,101 @@ typedef struct File
 
 void touch(Dir *parent, char *name)
 {
-	/* implementeaza verificare daca exista director cu numele name, la fel si la mkdir pt file */
 	if (parent->head_children_files == NULL)
 	{
-		File *file = malloc(sizeof(File));
-		// char* auxName = malloc(sizeof(name));
-		// strcpy(auxName, name);
-		file->name = name;
-		file->parent = parent;
-		file->next = NULL;
-		parent->head_children_files = file;
-	}
-	else
-	{
-		File *file = malloc(sizeof(File));
-		file->name = name;
-		file->parent = parent;
-		file->next = NULL;
-		File *aux = parent->head_children_files;
-		while (aux->next != NULL)
+		/* daca nu exista niciun fisier si niciun director in directorul parent */
+		if (parent->head_children_dirs == NULL)
 		{
-			if (strcmp(aux->name, name) == 0)
+			File *file = malloc(sizeof(File));
+			file->name = name;
+			file->parent = parent;
+			file->next = NULL;
+			parent->head_children_files = file;
+		}
+		/* daca nu exista niciun fisier dar exista directoare in directorul parent */
+		else
+		{
+			Dir *auxDir = parent->head_children_dirs;
+			while (auxDir->next != NULL)
 			{
-				printf("%s", "File already exists\n");
-				free(file);
+				if (strcmp(auxDir->name, name) == 0)
+				{
+					printf("File already exists\n");
+					free(name);
+					return;
+				}
+				auxDir = auxDir->next;
+			}
+			if (strcmp(auxDir->name, name) == 0)
+			{
+				printf("File already exists\n");
 				free(name);
 				return;
 			}
-			aux = aux->next;
+			/* daca nu s-a gasit director cu numele name si nu exista fisiere in directorul parent */
+			File *file = malloc(sizeof(File));
+			file->name = name;
+			file->parent = parent;
+			file->next = NULL;
+			parent->head_children_files = file;
 		}
-		if (strcmp(aux->name, name) == 0)
+	}
+	else
+	{
+		/* daca exista fisiere in directorul parent */
+		File *auxFile = parent->head_children_files;
+		while (auxFile->next != NULL)
 		{
-			printf("%s", "File already exists\n");
-			free(file);
+			if (strcmp(auxFile->name, name) == 0)
+			{
+				printf("File already exists\n");
+				free(name);
+				return;
+			}
+			auxFile = auxFile->next;
+		}
+		if (strcmp(auxFile->name, name) == 0)
+		{
+			printf("File already exists\n");
 			free(name);
 			return;
 		}
-		aux->next = file;
+		/* daca nu s-a gasit fisier cu numele name si nu exista directoare in directorul parent */
+		if (parent->head_children_dirs == NULL)
+		{
+			File *file = malloc(sizeof(File));
+			file->name = name;
+			file->parent = parent;
+			file->next = NULL;
+			auxFile->next = file;
+		}
+		/* daca nu s-a gasit fisier cu numele name dar exista directoare in directorul parent */
+		else
+		{
+			Dir *auxDir = parent->head_children_dirs;
+			while (auxDir->next != NULL)
+			{
+				if (strcmp(auxDir->name, name) == 0)
+				{
+					printf("File already exists\n");
+					free(name);
+					return;
+				}
+				auxDir = auxDir->next;
+			}
+			if (strcmp(auxDir->name, name) == 0)
+			{
+				printf("File already exists\n");
+				free(name);
+				return;
+			}
+			/* daca nu s-au gasit fisier sau director cu numele name in directorul parent */
+			File *file = malloc(sizeof(File));
+			file->name = name;
+			file->parent = parent;
+			file->next = NULL;
+			auxFile->next = file;
+		}
 	}
 }
 
@@ -69,47 +127,113 @@ void mkdir(Dir *parent, char *name)
 {
 	if (parent->head_children_dirs == NULL)
 	{
-		Dir *dir = malloc(sizeof(Dir));
-		dir->name = name;
-		dir->parent = parent;
-		dir->head_children_dirs = NULL;
-		dir->head_children_files = NULL;
-		dir->next = NULL;
-		parent->head_children_dirs = dir;
-	}
-	else
-	{
-		Dir *dir = malloc(sizeof(Dir));
-		dir->name = name;
-		dir->parent = parent;
-		dir->head_children_dirs = NULL;
-		dir->head_children_files = NULL;
-		dir->next = NULL;
-		Dir *aux = parent->head_children_dirs;
-		while (aux->next != NULL)
+		/* daca nu exista niciun director si niciun fisier in directorul parent */
+		if (parent->head_children_files == NULL)
 		{
-			if (strcmp(aux->name, name) == 0)
+			Dir *dir = malloc(sizeof(Dir));
+			dir->name = name;
+			dir->parent = parent;
+			dir->head_children_dirs = NULL;
+			dir->head_children_files = NULL;
+			dir->next = NULL;
+			parent->head_children_dirs = dir;
+		}
+		/* daca nu exista niciun director dar exista fisiere in directorul parent */
+		else
+		{
+			File *auxFile = parent->head_children_files;
+			while (auxFile->next != NULL)
 			{
-				printf("%s", "Directory already exists\n");
-				free(dir);
+				if (strcmp(auxFile->name, name) == 0)
+				{
+					printf("Directory already exists\n");
+					free(name);
+					return;
+				}
+				auxFile = auxFile->next;
+			}
+			if (strcmp(auxFile->name, name) == 0)
+			{
+				printf("Directory already exists\n");
 				free(name);
 				return;
 			}
-			aux = aux->next;
+			/* daca nu s-a gasit fisier cu numele name si nu exista directoare in directorul parent */
+			Dir *dir = malloc(sizeof(Dir));
+			dir->name = name;
+			dir->parent = parent;
+			dir->head_children_dirs = NULL;
+			dir->head_children_files = NULL;
+			dir->next = NULL;
+			parent->head_children_dirs = dir;
 		}
-		if (strcmp(aux->name, name) == 0)
+	}
+	else
+	{
+		/* daca exista directoare in directorul parent */
+		Dir *auxDir = parent->head_children_dirs;
+		while (auxDir->next != NULL)
 		{
-			printf("%s", "Directory already exists\n");
-			free(dir);
+			if (strcmp(auxDir->name, name) == 0)
+			{
+				printf("Directory already exists\n");
+				free(name);
+				return;
+			}
+			auxDir = auxDir->next;
+		}
+		if (strcmp(auxDir->name, name) == 0)
+		{
+			printf("Directory already exists\n");
 			free(name);
 			return;
 		}
-		aux->next = dir;
+		/* daca nu s-a gasit director cu numele name si nu exista fisiere in directorul parent */
+		if (parent->head_children_files == NULL)
+		{
+			Dir *dir = malloc(sizeof(Dir));
+			dir->name = name;
+			dir->parent = parent;
+			dir->head_children_dirs = NULL;
+			dir->head_children_files = NULL;
+			dir->next = NULL;
+			auxDir->next = dir;
+		}
+		/* daca nu s-a gasit director cu numele name dar exista fisiere in directorul parent */
+		else
+		{
+			File *auxFile = parent->head_children_files;
+			while (auxFile->next != NULL)
+			{
+				if (strcmp(auxFile->name, name) == 0)
+				{
+					printf("File already exists\n");
+					free(name);
+					return;
+				}
+				auxFile = auxFile->next;
+			}
+			if (strcmp(auxFile->name, name) == 0)
+			{
+				printf("File already exists\n");
+				free(name);
+				return;
+			}
+			/* daca nu s-au gasit director sau fisier cu numele name in directorul parent */
+			Dir *dir = malloc(sizeof(Dir));
+			dir->name = name;
+			dir->parent = parent;
+			dir->head_children_dirs = NULL;
+			dir->head_children_files = NULL;
+			dir->next = NULL;
+			auxDir->next = dir;
+		}
 	}
 }
 
 void ls(Dir *parent)
 {
+	/* afiseaza directoarele din directorul parent */
 	if (parent->head_children_dirs != NULL)
 	{
 		Dir *aux1 = parent->head_children_dirs;
@@ -120,6 +244,7 @@ void ls(Dir *parent)
 		}
 		printf("%s\n", aux1->name);
 	}
+	/* afiseaza fisierele din directorul parent */
 	if (parent->head_children_files != NULL)
 	{
 		File *aux = parent->head_children_files;
@@ -673,7 +798,13 @@ void mv(Dir *parent, char *oldname, char *newname)
 	}
 }
 
-/* optimizeaza functiile
+/* mv gigelush
+
+touch gigel
+mv gigel gigelush
+stop
+
+optimizeaza functiile
 citeste tema inca o data
 coding style
 acolade pe rand cu antetul ca in java
