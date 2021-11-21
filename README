@@ -1,0 +1,33 @@
+La aceasta tema am lucrat aproximativ 7 zile, insa doar 3 zile au fost de
+implementare propriu-zisa a comenzilor, restul timpului concentrandu-ma pe
+implementarea memory management-ului, scrierea comentariilor si a acestui
+README.
+Detalii de implementare:
+-> primele trei functii, touch, mkdir si ls mi-au luat aproximativ doua ore si
+au fost implementate in prima zi;
+-> in a doua zi, am implementat functiile rm, rmdir, cd, tree si pwd. La acest
+stadiu, foloseam "stop" ca sirul care opreste programul in do while. Interesant
+de mentionat este faptul ca prima mea implementare pentru functia pwd a fost
+recursiva, insa am renuntat la ea mai tarziu din motivul nevoii eliberarii
+memoriei;
+-> in a treia zi, am implementat functia mv. Fiind cea mai grea dintre cele ce
+au trebuit implementate, nu am putut sa o implementez din minte, asa ca mi-am
+construit si un plan de implementare;
+-> in zilele nr. 4 si 5, m-am concentrat pe alocarea corecta a memoriei si
+dezalocarea acesteia. Cel mai greu a fost in cazul functiei pwd, unde
+implementarea mea originala crea un sir alocat cu malloc la fiecare pas al
+recursivitatii si il returna mai departe, fapt care ducea inevitabil (cel putin
+din cate stiu eu) la leak-uri de memorie. De aceea, am rescris-o iterativ si,
+cu un pic de string manipulation, am reusit sa intorc sirul dorit si sa eliberez
+toata memoria;
+-> in penultima zi, am optimizat un pic codul, l-am facut mai usor de inteles si
+am scris o mare parte din comentarii;
+-> ultima zi a proiectului a constat in terminarea comentariilor si scrierea
+README-ului.
+Cum mi s-a parut tema:
+-> implementarea functiilor a fost oarecum intuitiva si pentru oricine care a
+lucrat cu liste inlantuite vine natural;
+-> au fost cateva momente in care m-am blocat, cum ar fi cel descris mai sus la
+dezalocarea memoriei comenzii pwd, dar cu o pauza de cateva minute sau cateva
+ore de somn am putut sa rezolv probleme;
+-> per total, tema a fost accesibila.
