@@ -635,48 +635,48 @@ void mv(Dir *parent, char *oldname, char *newname)
 	{
 		/* cauta un director cu numele oldname in directorul parent */
 		int oldnameAsDir = 0;
-		Dir *aux = parent->head_children_dirs;
-		while (aux->next != NULL)
+		Dir *oldAuxDir = parent->head_children_dirs;
+		while (oldAuxDir->next != NULL)
 		{
-			if (strcmp(aux->name, oldname) == 0)
+			if (strcmp(oldAuxDir->name, oldname) == 0)
 			{
 				oldnameAsDir = 1;
 				break;
 			}
-			aux = aux->next;
+			oldAuxDir = oldAuxDir->next;
 		}
-		if (strcmp(aux->name, oldname) == 0)
+		if (strcmp(oldAuxDir->name, oldname) == 0)
 			oldnameAsDir = 1;
 		/* daca s-a gasit un director cu numele oldname in directorul parent, cauta director cu numele newname */
 		if (oldnameAsDir == 1)
 		{
 			int newnameAsDirOrFile = 0;
-			Dir *aux1 = parent->head_children_dirs;
-			while (aux1->next != NULL)
+			Dir *newAuxDir = parent->head_children_dirs;
+			while (newAuxDir->next != NULL)
 			{
-				if (strcmp(aux1->name, newname) == 0)
+				if (strcmp(newAuxDir->name, newname) == 0)
 				{
 					newnameAsDirOrFile = 1;
 					break;
 				}
-				aux1 = aux1->next;
+				newAuxDir = newAuxDir->next;
 			}
-			if (strcmp(aux1->name, newname) == 0)
+			if (strcmp(newAuxDir->name, newname) == 0)
 				newnameAsDirOrFile = 1;
 			/* daca nu s-a gasit un director cu numele newname si exista fisiere in directorul parent, cauta si fisier cu numele newname */
 			if (newnameAsDirOrFile == 0 && parent->head_children_files != NULL)
 			{
-				File *aux4 = parent->head_children_files;
-				while (aux4->next != NULL)
+				File *auxFile = parent->head_children_files;
+				while (auxFile->next != NULL)
 				{
-					if (strcmp(aux4->name, newname) == 0)
+					if (strcmp(auxFile->name, newname) == 0)
 					{
 						newnameAsDirOrFile = 1;
 						break;
 					}
-					aux4 = aux4->next;
+					auxFile = auxFile->next;
 				}
-				if (strcmp(aux4->name, newname) == 0)
+				if (strcmp(auxFile->name, newname) == 0)
 					newnameAsDirOrFile = 1;
 			}
 			/* daca nu s-a gasit niciun director sau fisier cu numele newname in directorul parent, se poate aplica mv */
@@ -710,74 +710,74 @@ void mv(Dir *parent, char *oldname, char *newname)
 			}
 		}
 	}
+	/* daca nu exista niciun director sau nu se poate aplica mv pe directoare, dar exista fisiere in directorul parent */
 	if (parent->head_children_files != NULL)
 	{
-		/* cauta oldname in file */
-		int oldnameinfile = 0;
-		File *aux2 = parent->head_children_files;
-		while (aux2->next != NULL)
+		/* cauta un fisier cu numele oldname in directorul parent */
+		int oldnameAsFile = 0;
+		File *oldAuxFile = parent->head_children_files;
+		while (oldAuxFile->next != NULL)
 		{
-			if (strcmp(aux2->name, oldname) == 0)
+			if (strcmp(oldAuxFile->name, oldname) == 0)
 			{
-				oldnameinfile = 1;
+				oldnameAsFile = 1;
 				break;
 			}
-			aux2 = aux2->next;
+			oldAuxFile = oldAuxFile->next;
 		}
-		if (strcmp(aux2->name, oldname) == 0)
-			oldnameinfile = 1;
-		if (oldnameinfile = 1)
+		if (strcmp(oldAuxFile->name, oldname) == 0)
+			oldnameAsFile = 1;
+		if (oldnameAsFile = 1)
 		{
-			/* daca exista oldname in file, cauta newname in file */
+			/* daca s-a gasit un fisier cu numele oldname in directorul parent, cauta fisier cu numele newname */
 			int newnameinfile = 0;
-			File *aux3 = parent->head_children_files;
-			while (aux3->next != NULL)
+			File *newAuxFile = parent->head_children_files;
+			while (newAuxFile->next != NULL)
 			{
-				if (strcmp(aux3->name, newname) == 0)
+				if (strcmp(newAuxFile->name, newname) == 0)
 				{
 					newnameinfile = 1;
 					break;
 				}
-				aux3 = aux3->next;
+				newAuxFile = newAuxFile->next;
 			}
-			if (strcmp(aux3->name, newname) == 0)
+			if (strcmp(newAuxFile->name, newname) == 0)
 				newnameinfile = 1;
+			/* daca nu s-a gasit un fisier cu numele newname si exista directoare in directorul parent, cauta si director cu numele newname */
 			if (newnameinfile == 0 && parent->head_children_dirs != NULL)
 			{
-				/*cauta si in dir */
-				Dir *aux5 = parent->head_children_dirs;
-				while (aux5->next != NULL)
+				Dir *auxDir = parent->head_children_dirs;
+				while (auxDir->next != NULL)
 				{
-					if (strcmp(aux5->name, newname) == 0)
+					if (strcmp(auxDir->name, newname) == 0)
 					{
 						newnameinfile = 1;
 						break;
 					}
-					aux5 = aux5->next;
+					auxDir = auxDir->next;
 				}
-				if (strcmp(aux5->name, newname) == 0)
+				if (strcmp(auxDir->name, newname) == 0)
 					newnameinfile = 1;
 			}
+			/* daca nu s-a gasit niciun fisier sau director cu numele newname in directorul parent, se poate aplica mv */
 			if (newnameinfile == 0)
-			/* daca newname nu exista deja in file/dir, se poate folosi mv */
 			{
 				rm(parent, oldname);
 				touch(parent, newname);
-				// free(oldname);
 				return;
 			}
+			/* daca s-a gasit un fisier sau director cu numele newname, nu se poate aplica mv */
 			else
 			{
-				/* daca newname exista deja in file/dir, iar lista de directoare s-a verificat deja */
 				printf("File/Director already exists\n");
 				free(oldname);
 				free(newname);
 				return;
 			}
 		}
+		/* daca nu s-a gasit un fisier cu numele oldname in directorul parent si nu se poate aplica mv pe directoare, nu se poate aplica mv */
 		else
 		{
-			/* daca nu exista oldname in file */
 			printf("File/Director not found\n");
 			free(oldname);
 			free(newname);
